@@ -1,35 +1,46 @@
 <template>
-  <section class="container">
+  <section class="container" :style='backgroundCard'>
     <div class="content">
       <p>{{ generation.name }}</p>
       <hr>
-      <div class="img-content">
+      <div class="img-initial">
         <img v-if="viewInitial" src="../assets/chuvisco.webp" width="98%" height="270px" alt="chuvisco tv">
-        <img v-else :src="urlUpdate()" :alt="pokemonSelected.name" width="60%">
+        <div v-else class="img-content">
+          <img :src="urlUpdate()" :alt="pokemon.name" width="60%">
+          <p v-if="!viewInitial">{{ pokemon.name }}</p>
+        </div>
       </div>
-      <p v-if="!viewInitial">{{ pokemonSelected.name }}</p>
     </div>
   </section>
 </template>
 
 <script>
+import { mapState } from 'vuex'
 export default {
   name: 'Card',
-  props: ['generation', 'pokemons', 'pokemonSelected'],
+  props: ['generation'],
   data() {
     return {
       viewInitial: true
     }
   },
+  computed: {
+    ...mapState({
+      pokemon: state => state.pokemonSelected,
+      species: state => state.pokemonSpecies
+    }),
+    backgroundCard() {
+      return {"background": this.species ? this.species.color.name : "black"}
+    }
+  },
   created() {
     setTimeout(() => {
       this.viewInitial = false
-    }, 5000)
-    console.log(this.pokemons)
+    }, 4000)
   },
   methods: {
     urlUpdate() {
-      const url = this.$store.state.pokemonSelected.sprites.other['official-artwork'].front_default
+      const url = this.pokemon.sprites.other['official-artwork'].front_default
       return url
     }
   }
@@ -46,16 +57,25 @@ export default {
     height: 340px;
     background: black;
   }
+  .content {
+    padding: 5px 0;
+  }
   .content>p {
     padding: 5px 0 0;
     margin: 0;
     font-weight: bold;
-    font-size: 1.5rem;
+    font-size: 1.2rem;
     text-align: center;
     color: #fff;
   }
-  .img-content{
+  .img-initial {
     display: flex;
     justify-content: center;
+  }
+  .img-content{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    color: #fff;
   }
 </style>

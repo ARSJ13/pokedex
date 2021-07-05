@@ -13,6 +13,7 @@
       :pokemons='pokemons'
       :generation='generationSelected'
       :pokemonSelected='pokemon'
+      :onApp='onApp'
     />
   </main>
 </template>
@@ -40,11 +41,12 @@ export default {
   computed: {
     ...mapState({
       pokemon: state => state.pokemonSelected,
+      species: state => state.pokemonSpecies,
       pokemons: state => state.listGeneration,
-      generationSelected: state => state.generationSelected  
+      generationSelected: state => state.generationSelected,
     })
   },
-  created() {
+  mounted() {
     if (this.generationSelected) {
       this.getAllGeneration()
     }
@@ -56,16 +58,45 @@ export default {
       } else {
         this.onApp = e.toggle
       }
-      this.$store.dispatch('getPokemonSelected', `${base_url}/pokemon/1/`)
-      this.$store.commit('UPDATE_GENERATION', { id: 1, name: 'I GENERATION' })
-      console.log(e)
+    this.toggleUpdate()
     },
     async getAllGeneration() {
       const result = await this.$store.dispatch('getAllGeneration', `${base_url}/generation/${this.generationSelected.id}`)
       await this.$store.dispatch('getAllPokemon',result.pokemon_species)
     },
+    async toggleUpdate() {
+      let info = {
+        url: `${base_url}/pokemon/1/`,
+        mutation: 'UPDATE_POKEMON'
+      }
+      await this.$store.dispatch('getPokemonSelected', info)
+      await this.$store.commit('UPDATE_GENERATION', { id: 1, name: 'I GENERATION' })
+      this.$store.dispatch('getAllGeneration', `${base_url}/generation/${this.generationSelected.id}`)
+      this.updateSpecies()
+    },
     updatePokemons() {
       this.getAllGeneration()
+        .then(() => {
+          let name = this.pokemons[0].name
+          let info = {
+            url: `${base_url}/pokemon/${name}`,
+            mutation: 'UPDATE_POKEMON'
+          }
+          this.$store.dispatch('getPokemonSelected', info)
+    
+          let infoSpecies = {
+            url: `${base_url}/pokemon-species/${name}`,
+            mutation: 'UPDATE_SPECIES'
+          }
+          this.$store.dispatch('getPokemonSelected', infoSpecies)
+        })
+    },
+    async updateSpecies() {
+      let info = {
+        url: `${base_url}/pokemon-species/${this.pokemon.name}`,
+        mutation: 'UPDATE_SPECIES'
+      }
+      await this.$store.dispatch('getPokemonSelected', info)
     }
   },
 }

@@ -1,19 +1,36 @@
 <template>
   <section class="control-container">
-    <h5>Selected generation</h5>
+    <h5>selected generation: <br /> '&#5130;''&#5125;'</h5>
     <div class="generation-content">
-      <button @click="pageUp">up</button>
-      <input type="text" v-model="generation.name">
-      <button @click="pageDown">down</button>
+      <div class="control-input">
+        <input v-if="onApp" type="text" v-model="generation.name">
+        <input v-if="!onApp" type="text">
+      </div>
+      <h5>selected pokemon: <br /> '&#5123;' '&#10006;' '&#5121;'</h5>
+      <div class="control-buttons">
+        <button @click="upPokemon">&#5123;</button>
+        <div class="control-button-selected">
+          <button @click="pageDown">&#5130;</button>
+          <button class="button-select">&#10006;</button>
+          <button @click="pageUp">&#5125;</button>
+        </div>
+        <button @click="downPokemon">&#5121;</button>
+      </div>
     </div>
   </section>
 </template>
 
 <script>
+import { mapState } from 'vuex'
 import base_url from '../api/config'
 export default {
   name: 'Controls',
-  props: ['pokemonSelected', '$store.state.listGeneration ', 'generation'],
+  props: ['generation', 'onApp'],
+  computed: {
+    ...mapState({
+      pokemons: state => state.listGeneration
+    })
+  },
   data() {
     return {
       generations: [
@@ -51,38 +68,66 @@ export default {
         }
       ],
       focusGeneration: null,
-      count: 1
+      count: 0,
+      countPokemon: 0
     }
   },
   created() {
     this.focusGeneration = this.generations[0]
     this.$store.commit('UPDATE_GENERATION', this.focusGeneration)
   },
+  updated() {
+    if(!this.onApp) this.focusGeneration = this.generations[0]
+  },
   methods: {
     pageUp() {
       if (this.focusGeneration.id < 8) {
-        ++this.count
+        this.count++
         this.focusGeneration = this.generations[this.count]
         this.$store.commit('UPDATE_GENERATION', this.focusGeneration)
         this.$emit('updatePokemonList')
-        this.updatePokemonGeneration()
+        this.countPokemon = 0
       } else {
         alert('Max generation!')
       }
     },
     pageDown() {
       if (this.focusGeneration.id > 1) {
-        --this.count
+        this.count--
         this.focusGeneration = this.generations[this.count]
         this.$store.commit('UPDATE_GENERATION', this.focusGeneration)
         this.$emit('updatePokemonList')
-        this.updatePokemonGeneration()
+        this.countPokemon = 0
       } else {
         alert('Min generation!')
       }
     },
-    updatePokemonGeneration() {
-      return this.$store.dispatch('getPokemonSelected', `${base_url}/pokemon/${this.$store.state.listGeneration[0].name}`)
+    upPokemon() {
+      if (this.countPokemon<=this.pokemons.length) {
+        this.countPokemon += 1
+        this.updateSelectPokemon(this.countPokemon)
+      }
+    },
+    downPokemon() {
+      if (this.countPokemon>=0) {
+        this.countPokemon -= 1
+        this.updateSelectPokemon(this.countPokemon)
+      }
+    },
+    updateSelectPokemon(count) {
+      let name = this.pokemons[count].name
+      let info = {
+        url: `${base_url}/pokemon/${name}`,
+        mutation: 'UPDATE_POKEMON'
+      }
+      this.$store.dispatch('getPokemonSelected', info)
+        .then(() => {
+          let infoSpecies = {
+            url: `${base_url}/pokemon-species/${name}`,
+            mutation: 'UPDATE_SPECIES'
+          }
+          this.$store.dispatch('getPokemonSelected', infoSpecies)
+        })
     }
   }
 }
@@ -90,5 +135,47 @@ export default {
 
 <style scoped>
   .control-container {
+    position: absolute;
+    top: 150px;
+    right: 50px;
+  }
+  h5 {
+    text-align: center;
+    line-height: 1.2rem;
+  }
+  .control-input {
+    display: flex;
+    justify-content: center;
+  }
+  .control-input>input {
+    width: 200px;
+    background: black;
+    color: white;
+    padding: 0.5rem 1rem;
+  }
+  .control-buttons {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    max-width: 200px;
+    margin: 2rem auto;
+    padding: 0.5rem;
+    border-style: inset;
+  }
+  .control-buttons>button {
+    padding: 10px 14px;
+  }
+  .control-button-selected>button{
+    padding: 10px 13px;
+  }
+  .control-button-selected>button, .control-buttons>button {
+    border-radius: 50%;
+    background:#000;
+    color: #fff;
+  }
+  .control-button-selected>button.button-select{
+    margin: 10px;
+    background: red;
   }
 </style>

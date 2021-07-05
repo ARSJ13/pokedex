@@ -18,6 +18,9 @@
 </script>
 
 <style>
+* {
+  font-family: 'Press Start 2P', cursive;
+}
 body {
   margin: 0px;
 }

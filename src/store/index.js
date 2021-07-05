@@ -7,8 +7,9 @@ export default new Vuex.Store({
   state: {
     listPokemons: '',
     listGeneration: '',
-    generationSelected: null,
-    pokemonSelected: null
+    generationSelected: '',
+    pokemonSelected: '',
+    pokemonSpecies: ''
   },
   mutations: {
     LIST_POKEMON(state, payload) {
@@ -22,6 +23,9 @@ export default new Vuex.Store({
     },
     UPDATE_POKEMON(state, payload) {
       state.pokemonSelected = payload
+    },
+    UPDATE_SPECIES(state, payload) {
+      state.pokemonSpecies = payload
     }
   },
   actions: {
@@ -47,14 +51,13 @@ export default new Vuex.Store({
         }
       })  
     },
-    getPokemonSelected({commit}, url) {
+    getPokemonSelected({commit}, info) {
       return new Promise((resolve, reject) => {
-        fetch(url)
+        fetch(info.url)
           .then(res => res.json())
           .then(res => {
-            commit('UPDATE_POKEMON', res)
+            commit(info.mutation, res)
             resolve(res)
-            console.log(res)
           })
           .catch(err => reject(err))
       })
