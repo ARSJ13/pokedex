@@ -1,28 +1,43 @@
 <template>
   <div id="app">
-    <img alt="Vue logo" src="./assets/logo.png">
-    <HelloWorld msg="Welcome to Your Vue.js App"/>
+    <Header />
+    <main class="container-app">
+      <router-view/>
+    </main>
   </div>
 </template>
 
 <script>
-import HelloWorld from './components/HelloWorld.vue'
-
-export default {
-  name: 'App',
-  components: {
-    HelloWorld
+  import Header from './components/Header.vue'
+  export default {
+    name: 'App',
+    components: {
+      Header
+    }
   }
-}
 </script>
 
 <style>
+body {
+  margin: 0px;
+}
 #app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
-  margin-top: 60px;
+  background: url('https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/150.png') 100% no-repeat;
+  background-position: bottom right;
+  display: grid;
+  grid-row: 50px 1fr;
+  width: 100%;
+  min-height: 100vh;
+  height: 100%;
+}
+.container-app {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+@media screen and (max-width: 1630px) {
+  #app {
+    background: linear-gradient(to right, #9441bd 20px, #b44aee 20px, transparent 40%)
+  }
 }
 </style>
