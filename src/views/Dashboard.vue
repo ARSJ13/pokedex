@@ -1,15 +1,17 @@
 <template>
   <main class="dash-container">
     <Card 
-      v-if="onApp"
+      v-if="onApp && !toggleCardEvolution"
       :pokemons='pokemons'
       :generation='generationSelected'
       :pokemonSelected='pokemon'
     />
-    <div v-else class="offApp"></div>
+    <div v-if="!onApp" class="offApp"></div>
+    <card-evolution v-if="toggleCardEvolution" :pokemonSpecies='species'></card-evolution>
     <on-button @evButton="toggleOnButton" />
     <Controls
       @updatePokemonList='updatePokemons'
+      @onCardEvolution='cardEvolution'
       :pokemons='pokemons'
       :generation='generationSelected'
       :pokemonSelected='pokemon'
@@ -21,6 +23,7 @@
 <script>
 import base_url from '../api/config'
 import Card from '../components/Card'
+import CardEvolution from '../components/CardEvolution'
 import OnButton from '../components/OnButton.vue'
 import Controls from '../components/Controls.vue'
 import { mapState } from 'vuex'
@@ -29,13 +32,15 @@ export default {
   name: 'Dashboard',
   components: {
     Card,
+    CardEvolution,
     OnButton,
-    Controls
+    Controls,
   },
   data() {
     return {
       list: null,
-      onApp: false
+      onApp: false,
+      toggleCardEvolution: false
     }
   },
   computed: {
@@ -52,11 +57,20 @@ export default {
     }
   },
   methods: {
+    cardEvolution(e) {
+      if(this.toggleCardEvolution) {
+        this.toggleCardEvolution = !e.toggle
+      } else {
+        this.toggleCardEvolution = e.toggle
+      }
+    },
     toggleOnButton(e) {
       if(this.onApp) {
         this.onApp = !e.toggle
+        this.toggleCardEvolution = false
       } else {
         this.onApp = e.toggle
+        this.toggleCardEvolution = false
       }
     this.toggleUpdate()
     },

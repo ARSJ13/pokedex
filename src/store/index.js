@@ -37,7 +37,6 @@ export default new Vuex.Store({
             const { pokemon_species } = res
             commit('LIST_GENERATION', pokemon_species)
             resolve(pokemon_species)
-            console.log(pokemon_species)
           })
           .catch(err => reject(err))
       })

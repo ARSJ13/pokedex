@@ -8,13 +8,13 @@
       </div>
       <h5>selected pokemon: <br /> '&#5123;' '&#10006;' '&#5121;'</h5>
       <div class="control-buttons">
-        <button @click="upPokemon">&#5123;</button>
+        <button @click="upPokemon" :disabled='!onApp || buttonSelected'>&#5123;</button>
         <div class="control-button-selected">
-          <button @click="pageDown">&#5130;</button>
-          <button class="button-select">&#10006;</button>
-          <button @click="pageUp">&#5125;</button>
+          <button @click="pageDown" :disabled='!onApp || buttonSelected'>&#5130;</button>
+          <button @click="selected" class="button-select" :disabled='!onApp'>&#10006;</button>
+          <button @click="pageUp" :disabled='!onApp || buttonSelected'>&#5125;</button>
         </div>
-        <button @click="downPokemon">&#5121;</button>
+        <button @click="downPokemon" :disabled='!onApp || buttonSelected'>&#5121;</button>
       </div>
     </div>
   </section>
@@ -29,7 +29,10 @@ export default {
   computed: {
     ...mapState({
       pokemons: state => state.listGeneration
-    })
+    }),
+    buttonSelected() {
+      return this.selectedButton
+    }
   },
   data() {
     return {
@@ -69,7 +72,8 @@ export default {
       ],
       focusGeneration: null,
       count: 0,
-      countPokemon: 0
+      countPokemon: 0,
+      selectedButton: false
     }
   },
   created() {
@@ -107,6 +111,10 @@ export default {
         this.countPokemon += 1
         this.updateSelectPokemon(this.countPokemon)
       }
+    },
+    selected() {
+      this.$emit('onCardEvolution', {toggle: true})
+      this.selectedButton = !this.selectedButton
     },
     downPokemon() {
       if (this.countPokemon>=0) {

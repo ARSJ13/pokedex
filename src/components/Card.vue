@@ -30,7 +30,7 @@ export default {
       species: state => state.pokemonSpecies
     }),
     backgroundCard() {
-      return {"background": this.species ? this.species.color.name : "black"}
+      return { "background": this.species ? this.species.color.name : "black" }
     }
   },
   created() {
