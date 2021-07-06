@@ -173,9 +173,11 @@ export default {
   }
   .control-buttons>button {
     padding: 10px 14px;
+    cursor: pointer;
   }
   .control-button-selected>button{
     padding: 10px 13px;
+    cursor: pointer;
   }
   .control-button-selected>button, .control-buttons>button {
     border-radius: 50%;
